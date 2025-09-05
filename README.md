@@ -34,6 +34,10 @@ cat data.bin | baid64 encode --hri myapp --embed-checksum
 # File input
 baid64 encode -f data.bin --hri myapp --prefix
 
+# Round-trip binary data
+baid64 encode --hex --hri contract --prefix --chunking "1d2f49409906..."
+baid64 decode --hex "contract:HS9JQJkG-aplggbl-omJGOr1..."
+
 # Help
 baid64 --help
 ```
@@ -47,6 +51,7 @@ baid64 --help
 - `--chunk-len <n>` - Subsequent chunk sizes (default: 7)
 - `--embed-checksum` - Embed checksum in encoded data
 - `--expected-hri <hri>` - Validate HRI when decoding
+- `--hex` - Treat input as hex (encode) or output as hex (decode)
 - `-f, --file <path>` - Read input from file
 
 ### ES Modules

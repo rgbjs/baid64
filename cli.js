@@ -31,6 +31,8 @@ while (i < args.length) {
     options.embedChecksum = true;
   } else if (arg === '--expected-hri') {
     options.expectedHri = args[++i];
+  } else if (arg === '--hex') {
+    options.hex = true;
   } else if (arg === '-f' || arg === '--file') {
     const filename = args[++i];
     input = readFileSync(filename);
@@ -58,6 +60,7 @@ Options:
   --chunk-len <n>           Subsequent chunk sizes (default: 7)
   --embed-checksum          Embed checksum in encoded data
   --expected-hri <hri>      Validate against expected HRI (decode only)
+  --hex                     Treat input as hex (encode) or output as hex (decode)
 
 Examples:
   # Encode text
@@ -74,6 +77,9 @@ Examples:
   
   # Decode and validate HRI
   baid64 decode --expected-hri myapp "myapp:SGVsbG8gV29ybGQ"
+  
+  # Round-trip with hex data
+  baid64 encode --hex --hri contract --prefix --chunking "1d2f494099066a996081b96"
   
   # Pipe support
   echo "Hello World" | baid64 encode
@@ -113,7 +119,19 @@ async function main() {
 
     if (command === 'encode') {
       // Convert string to Buffer if needed
-      const data = Buffer.isBuffer(input) ? input : Buffer.from(input, 'utf8');
+      let data;
+      if (Buffer.isBuffer(input)) {
+        data = input;
+      } else if (options.hex) {
+        // Parse hex input
+        const cleanHex = input.replace(/[^0-9a-fA-F]/g, '');
+        if (cleanHex.length % 2 !== 0) {
+          throw new Error('Invalid hex input: must be even number of hex characters');
+        }
+        data = Buffer.from(cleanHex, 'hex');
+      } else {
+        data = Buffer.from(input, 'utf8');
+      }
       const result = encode(data, options);
       console.log(result);
     } else if (command === 'decode') {
@@ -132,20 +150,29 @@ async function main() {
         if (result.mnemonic) {
           console.error(`Mnemonic: ${result.mnemonic}`);
         }
-        // Try to output as string if it looks like text, otherwise hex
+        // Output format based on --hex flag or auto-detection
         const payload = result.payload;
-        const isText = payload.every(byte => 
-          (byte >= 32 && byte <= 126) || byte === 9 || byte === 10 || byte === 13
-        );
         
-        if (isText) {
-          console.log(payload.toString('utf8'));
-        } else {
+        if (options.hex) {
           console.log(payload.toString('hex'));
+        } else {
+          const isText = payload.every(byte => 
+            (byte >= 32 && byte <= 126) || byte === 9 || byte === 10 || byte === 13
+          );
+          
+          if (isText) {
+            console.log(payload.toString('utf8'));
+          } else {
+            console.log(payload.toString('hex'));
+          }
         }
       } else {
-        // Pipe output - just raw bytes
-        process.stdout.write(result.payload);
+        // Pipe output - respect --hex flag
+        if (options.hex) {
+          console.log(result.payload.toString('hex'));
+        } else {
+          process.stdout.write(result.payload);
+        }
       }
     }
   } catch (error) {
