@@ -1,0 +1,50 @@
+{
+  "name": "baid64",
+  "version": "0.0.1",
+  "description": "URL-safe Base64 encoding with checksums for identities",
+  "type": "module",
+  "main": "index.js",
+  "bin": {
+    "baid64": "./cli.js"
+  },
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "require": "./index.cjs"
+    }
+  },
+  "scripts": {
+    "test": "node --experimental-vm-modules node_modules/.bin/jest",
+    "test:watch": "node --experimental-vm-modules node_modules/.bin/jest --watch",
+    "build:cjs": "node build-cjs.js",
+    "prepublishOnly": "npm run build:cjs"
+  },
+  "keywords": [
+    "base64",
+    "encoding",
+    "checksum",
+    "identity",
+    "url-safe",
+    "baid64"
+  ],
+  "author": "",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rgbjs/baid64"
+  },
+  "bugs": {
+    "url": "https://github.com/rgbjs/baid64/issues"
+  },
+  "homepage": "https://github.com/rgbjs/baid64#readme",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "devDependencies": {
+    "jest": "^29.5.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "transform": {}
+  }
+}
