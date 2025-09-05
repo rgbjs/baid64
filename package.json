@@ -1,6 +1,6 @@
 {
   "name": "baid64",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "URL-safe Base64 encoding with checksums for identities",
   "type": "module",
   "main": "index.js",

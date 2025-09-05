@@ -142,6 +142,26 @@ baid64 uses a custom alphabet where:
 - `~` replaces `/`
 - No padding characters (`=`)
 
+## Differences from Base64url (RFC 4648)
+
+While Base64url is also URL-safe, baid64 differs in several ways:
+
+| Feature | Base64url | baid64 |
+|---------|-----------|--------|
+| **Alphabet** | `A-Za-z0-9-_` | `A-Za-z0-9_~` |
+| **URL-unsafe chars** | `-` and `_` | `_` and `~` |
+| **Padding** | Optional `=` | None |
+| **Checksums** | None | Optional SHA-256 based |
+| **Human prefixes** | None | HRI (Human Readable Identifier) |
+| **Chunking** | None | Optional hyphen formatting |
+| **Error detection** | None | 32-bit checksum + mnemonic words |
+
+**Key differences:**
+- **Different alphabet**: baid64 uses `~` instead of Base64url's `-` 
+- **Built-in checksums**: Detect transmission/transcription errors
+- **Human-readable features**: HRI prefixes and mnemonic checksums for voice/manual verification
+- **Structured formatting**: Chunking support for improved readability
+
 ## License
 
 Apache-2.0
